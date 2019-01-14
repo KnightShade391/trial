@@ -1,0 +1,131 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+int nof, frmsz = 5, seq[100], ch;
+
+struct frame{
+    int seqno;
+    char msg[100];
+} frms[100], shuffrms[100];
+
+char s[100];
+
+void assignSeqNo(){
+    int i, j, k = 0, l;
+    l = strlen(s);
+    i = 0;
+    while(i < l){
+        frms[k].seqno = k;
+        j = 0;
+        while(j < frmsz && s[i] != '\0'){
+            frms[k].msg[j] = s[i];
+            j++;
+            i++;
+        }
+        k++;
+    }   
+
+    printf("After assigning sequence numbers: \n");
+    for(i=0;i<k;i++)
+        printf("%d: %s\n", frms[i].seqno, frms[i].msg);
+    
+    nof = k;
+}
+
+void generateRandom(){
+    int i = 0, j, r, flag;
+    while(i < nof){
+        r = rand() % nof;
+        flag = 0;
+        for(j=0;j<i;j++)
+            if(shuffrms[j].seqno == r){
+                flag = 1;
+                break;
+            }
+        if(flag == 0){
+            shuffrms[i].seqno = frms[r].seqno;
+            for(int k=0;k<frmsz;k++)
+                shuffrms[i].msg[k] = frms[r].msg[k];
+            i++;
+        }
+    }
+}
+
+void generateManual(){
+    for(int i=0;i<nof;i++){
+        shuffrms[i].seqno = seq[i];
+        for(int k=0;k<frmsz;k++)
+            shuffrms[i].msg[k] = frms[seq[i]].msg[k];
+    }
+}
+
+void shuffle(){
+    if(ch == 1 || ch == 3)
+        generateRandom();
+    else if(ch == 2 || ch == 4)
+        generateManual();
+
+    printf("After shuffling: \n");
+    for(int i=0;i<nof;i++)
+        printf("%d: %s\n", shuffrms[i].seqno, shuffrms[i].msg);
+}
+
+void sort(){
+    for(int i=0;i<nof-1;i++)
+        for(int j=0;j<nof-i-1;j++)
+            if(shuffrms[j].seqno > shuffrms[j + 1].seqno){
+                struct frame temp = shuffrms[j];
+                shuffrms[j] = shuffrms[j + 1];
+                shuffrms[j + 1] = temp;
+            }
+
+    printf("After sorting: \n");
+    for(int i=0;i<nof;i++)
+        printf("%d: %s\n", shuffrms[i].seqno, shuffrms[i].msg);
+}
+
+void main(){
+    printf("Enter the string: ");
+    gets(s);
+    printf("Select the sequence generation and number of frames: ");
+    printf("\n1-Generate random sequence and use built in frame size");
+    printf("\n2-Manually enter sequence and use built in frame size");
+    printf("\n3-Generate random sequence and manually enter the number of frames");
+    printf("\n4-Manually enter sequence and the number of frames");
+    printf("\nEnter your choice: ");
+    scanf("%d", &ch);
+    switch(ch){
+        case 1: 
+            break;
+        case 2:
+            nof = ceil(strlen(s) / (float)frmsz);
+            printf("Enter the sequence (enter numbers from 0 to %d in any order): \n", nof - 1);
+            for(int i=0;i<nof;i++)
+                scanf("%d", &seq[i]);
+            break;
+        case 3: 
+            printf("Enter the number of frames: ");
+            scanf("%d", &nof);
+            frmsz = ceil(strlen(s) / (float)nof);
+            break;
+        case 4:
+            printf("Enter the number of frames: ");
+            scanf("%d", &nof);
+            frmsz = ceil(strlen(s) / (float)nof);
+            printf("Enter the sequence (enter numbers from 0 to %d in any order): \n", nof - 1);
+            for(int i=0;i<nof;i++)
+                scanf("%d", &seq[i]);
+            break;
+        default: 
+            printf("Invalid choice.\nExiting...\n");
+            exit(0);
+    }
+    assignSeqNo();
+    shuffle();
+    sort();
+    printf("Received message: \n");
+    for(int i=0;i<nof;i++)
+        printf("%s", shuffrms[i].msg);
+}
