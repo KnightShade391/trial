@@ -72,7 +72,7 @@ void main(){
     int count = 0;
     for(int i=0;msg[i]!='\0';i++){
         int ptxt = (int)msg[i];
-        C[i] = xpowYModN(ptxt, e, n);
+        C[i] = xPowYModN(ptxt, e, n);
         count++;
     }
 
@@ -81,7 +81,7 @@ void main(){
 
     for(int i=0;i<count;i++){
 		ull ctxt = (int)C[i];
-		D[i] = xpowYModN(ctxt, d, n);
+		D[i] = xPowYModN(ctxt, d, n);
 	}
 
 	printf("Decrypted message: ");
