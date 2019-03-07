@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define BUCKETSIZE 250
+#define OUTRATE 25
+
+struct packet{
+    int arrivalTime, weight;
+} pkt[15];
+
+void runLeakyBucket(){
+    int t, pktno = 0, remaining = 0, freeSpace = BUCKETSIZE;
+    for(t=0;t<30;t++){
+        if(pkt[pktno].arrivalTime == t){
+            if(pkt[pktno].weight <= freeSpace){
+                remaining += pkt[pktno].weight;
+                freeSpace -= pkt[pktno].weight;
+                printf("At time = %d: packet%d is inserted into bucket!", t, (pktno + 1));
+                printf("\nFree space available in the bucket: %d\n\n", freeSpace);
+            } else {
+                printf("At time = %d: packet%d is discarded since packet size is more than the buffer!\n\n", t, (pktno + 1));
+            }
+            pktno++;
+        }
+        if((t % 5) == 0){
+            if(remaining >= OUTRATE){
+                remaining -= OUTRATE;
+                freeSpace += OUTRATE;
+                printf("At time = %d: %dKb are transferred!", t, OUTRATE);
+            } else if(remaining > 0){
+                freeSpace += remaining;
+                printf("At time = %d: %dKb are transferred!", t, remaining);
+                remaining = 0;
+            }
+            printf("\nFree space available in the bucket: %d\n\n", freeSpace);
+        }
+    }
+    while(remaining != 0){
+        if(remaining < OUTRATE){
+            freeSpace += remaining;
+            printf("At time = %d: %dKb are transferred!", t++, remaining);
+            printf("\nFree space available in the bucket: %d\n\n", freeSpace);
+            break;
+        }
+        remaining -= OUTRATE;
+        freeSpace += OUTRATE;
+        printf("At time = %d: %dKb are transferred!", t++, OUTRATE);
+        printf("\nFree space available in the bucket: %d\n\n", freeSpace);
+    }
+    printf("Bucket is empty!\n");
+}
+
+void main(){
+    int n;
+    printf("Enter the number of packets: ");
+    scanf("%d", &n);
+    for(int i=0;i<n;i++){
+        printf("Enter the arrival time and weight of packet%d: ", (i + 1));
+        scanf("%d%d", &pkt[i].arrivalTime, &pkt[i].weight);
+    }
+    runLeakyBucket();
+}
