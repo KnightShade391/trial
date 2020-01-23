@@ -1,2 +1,4 @@
 PS1="\n\[$(tput setaf 118)\]\[$(tput bold)\]\u@\h \[$(tput sgr0)\]\[$(tput setaf 120)\]\w -> \[$(tput sgr0)\]";
 export PS1;
+
+link: https://www.youtube.com/watch?v=LXgXV7YmSiU
